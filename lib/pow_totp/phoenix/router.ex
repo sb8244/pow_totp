@@ -10,6 +10,8 @@ defmodule PowTotp.Phoenix.Router do
         only: [:new, :create, :edit],
         singleton: true
       )
+
+      Router.pow_resources("/session/totp", SessionController, only: [:new, :create])
     end
   end
 end

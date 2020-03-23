@@ -21,7 +21,7 @@ defmodule PowTotp.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:pow, "~> 1.0.0"},
+      {:pow, "~> 1.0.19"},
       {:pot, "~> 0.10.1"},
       {:qr_code, "~> 2.1.0"}
     ]

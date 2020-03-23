@@ -37,6 +37,11 @@ defmodule PowTotp.Plug do
     QRCode.Svg.to_base64(qr)
   end
 
+  def requires_totp?(conn) do
+    user = Pow.Plug.current_user(conn)
+    user.totp_activated_at != nil and user.totp_secret != nil
+  end
+
   defp gen_totp_secret(), do: :crypto.strong_rand_bytes(30) |> Base.encode32()
 
   defp totp_issuer(config),

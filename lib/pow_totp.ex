@@ -9,7 +9,7 @@ defmodule PowTotp do
   def use_ecto_schema?(), do: true
 
   @impl true
-  def phoenix_controller_callbacks?(), do: false
+  def phoenix_controller_callbacks?(), do: true
 
   @impl true
   def phoenix_router?(), do: true

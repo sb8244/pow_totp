@@ -22,12 +22,13 @@ defmodule PowTotp.Phoenix.SetupController do
 
   def process_create(conn, %{"totp" => params}) do
     case Plug.try_new(params) do
-      {:ok, changeset} ->
+      {:ok, _changeset} ->
         case Plug.persist_totp(conn, params) do
           {:ok, _user} ->
             {:ok, :redirect, conn}
 
           {:error, err} ->
+            # TODO: Handle error here
             throw(err)
         end
 
