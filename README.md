@@ -8,3 +8,7 @@
 - [ ] Allow for user to delete TOTP after it's setup
 - [ ] Release with 1.0.20 for template hooks
 - [ ] Implement base acceptable templates (extract from existing project)
+
+## In Action
+
+![ezgif-2-7a5b55aed648](https://user-images.githubusercontent.com/1231659/77272726-42c85a00-6c88-11ea-8e27-5c19ad351069.gif)
