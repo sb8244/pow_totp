@@ -1,4 +1,6 @@
 defmodule PowTotp.Encryption do
+  # TODO: This should use `Pow.Plug.MessageVerifier`, but it doesn't support encryption currently
+
   @salt "PowTotp.Encryption"
 
   def encrypt_totp_params(config, params = %{"totp_secret" => totp_secret}) do
