@@ -15,6 +15,10 @@ defmodule PowTotp.Stores.Cookie do
     client_store_get(conn)
   end
 
+  def delete(conn) do
+    client_store_delete(conn)
+  end
+
   defp client_store_put(conn, identifier) do
     config = Pow.Plug.fetch_config(conn)
     signed_token = Pow.Plug.sign_token(conn, signing_salt(), identifier, config)
@@ -29,11 +33,19 @@ defmodule PowTotp.Stores.Cookie do
     conn = Conn.fetch_cookies(conn)
 
     with token when is_binary(token) <- conn.req_cookies[cookie_key(config)],
-         {:ok, identity}             <- Pow.Plug.verify_token(conn, signing_salt(), token, config) do
+         {:ok, identity} <- Pow.Plug.verify_token(conn, signing_salt(), token, config) do
       {identity, conn}
     else
       _any -> {nil, conn}
     end
+  end
+
+  defp client_store_delete(conn) do
+    config = Pow.Plug.fetch_config(conn)
+
+    conn
+    |> Conn.fetch_cookies()
+    |> Conn.delete_resp_cookie(cookie_key(config), cookie_opts(config))
   end
 
   defp signing_salt(), do: Atom.to_string(__MODULE__)
@@ -52,5 +64,4 @@ defmodule PowTotp.Stores.Cookie do
     |> Keyword.put_new(:max_age, 60 * 10)
     |> Keyword.put_new(:path, "/")
   end
-
 end

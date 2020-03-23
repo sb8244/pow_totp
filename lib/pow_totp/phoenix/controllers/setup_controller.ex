@@ -11,8 +11,6 @@ defmodule PowTotp.Phoenix.SetupController do
   end
 
   def respond_new({:ok, %{secret: secret, svg: svg, changeset: changeset}, conn}) do
-    IO.inspect(:pot.totp(secret))
-
     conn
     |> assign(:secret, secret)
     |> assign(:svg, svg)
@@ -28,8 +26,7 @@ defmodule PowTotp.Phoenix.SetupController do
             {:ok, :redirect, conn}
 
           {:error, err} ->
-            # TODO: Handle error here
-            throw(err)
+            {:error, :persistence, conn}
         end
 
       {:error, changeset} ->
@@ -51,6 +48,12 @@ defmodule PowTotp.Phoenix.SetupController do
     totp_activated_redirect(conn)
   end
 
+  def respond_create({:error, :persistence, conn}) do
+    conn
+    |> put_flash(:error, extension_messages(conn).request_error(conn))
+    |> redirect(to: routes(conn).session_path(conn, :new))
+  end
+
   def process_edit(conn, _params) do
     user = Pow.Plug.current_user(conn)
 
@@ -70,6 +73,7 @@ defmodule PowTotp.Phoenix.SetupController do
 
   def respond_edit({:error, :not_setup, conn}) do
     conn
+    |> put_flash(:error, extension_messages(conn).not_setup_error(conn))
     |> redirect(to: routes(conn).path_for(conn, __MODULE__, :new))
   end
 

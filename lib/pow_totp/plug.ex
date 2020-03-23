@@ -3,9 +3,13 @@ defmodule PowTotp.Plug do
   Helper functions for Pow endpoints
   """
 
+  require Logger
+
+  alias PowTotp.Forms.CodeChangeset
+
   def generate_new_token(conn) do
     totp_secret = gen_totp_secret()
-    changeset = PowTotp.CodeChangeset.changeset(%{"totp_secret" => totp_secret})
+    changeset = CodeChangeset.changeset(%{"totp_secret" => totp_secret})
     svg = generate_svg(conn, %{"secret" => totp_secret})
 
     %{changeset: changeset, secret: totp_secret, svg: svg}
@@ -13,8 +17,8 @@ defmodule PowTotp.Plug do
 
   def try_new(totp_params = %{}) do
     totp_params
-    |> PowTotp.CodeChangeset.changeset()
-    |> PowTotp.CodeChangeset.apply_insert()
+    |> CodeChangeset.changeset()
+    |> CodeChangeset.apply_insert()
   end
 
   def persist_totp(conn, %{"secret" => totp_secret}) do
@@ -26,6 +30,22 @@ defmodule PowTotp.Plug do
       %{"totp_secret" => totp_secret, "totp_activated_at" => DateTime.utc_now()},
       config
     )
+  end
+
+  def verify_totp(conn, params, user) do
+    config = Pow.Plug.fetch_config(conn)
+
+    case PowTotp.Encryption.decrypt_totp_secret(config, user) do
+      {:ok, secret} ->
+        params
+        |> Map.put("secret", secret)
+        |> CodeChangeset.changeset()
+        |> CodeChangeset.apply_insert()
+
+      {:error, e} ->
+        Logger.error("#{__MODULE__} decrypt_totp_secret failed error=#{inspect e}")
+        {:error, :secret_failure}
+    end
   end
 
   def generate_svg(conn = %Plug.Conn{}, %{"secret" => totp_secret}) do

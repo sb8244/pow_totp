@@ -1,4 +1,4 @@
-defmodule PowTotp.Phoenix.SetupTemplate do
+defmodule PowTotp.Phoenix.SessionTemplate do
   @moduledoc false
 
   # TODO: Flesh this out based on the sample project
@@ -6,10 +6,6 @@ defmodule PowTotp.Phoenix.SetupTemplate do
   use Pow.Phoenix.Template
 
   template(:new, :html, """
-  <h1>SETUP</h1>
-  """)
-
-  template(:edit, :html, """
-  <h1>EDIT</h1>
+  <h1>SESSION</h1>
   """)
 end

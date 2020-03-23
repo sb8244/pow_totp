@@ -1,4 +1,4 @@
-defmodule PowTotp.CodeChangeset do
+defmodule PowTotp.Forms.CodeChangeset do
   use Ecto.Schema
   import Ecto.Changeset
 

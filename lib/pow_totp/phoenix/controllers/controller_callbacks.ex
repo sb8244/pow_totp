@@ -16,7 +16,12 @@ defmodule PowTotp.Phoenix.ControllerCallbacks do
     response
   end
 
-  def before_respond(PowAssent.Phoenix.AuthorizationController, :callback, response = {:ok, conn}, _config) do
+  def before_respond(
+        PowAssent.Phoenix.AuthorizationController,
+        :callback,
+        response = {:ok, conn},
+        _config
+      ) do
     maybe_require_totp(conn, response)
   end
 
@@ -25,13 +30,14 @@ defmodule PowTotp.Phoenix.ControllerCallbacks do
       true ->
         conn =
           conn
-            |> PowTotp.Stores.Cookie.put_user_identity()
-            |> Pow.Plug.delete()
-            |> redirect_to_session_totp()
+          |> PowTotp.Stores.Cookie.put_user_identity()
+          |> Pow.Plug.delete()
+          |> redirect_to_session_totp()
 
         {:halt, conn}
 
-      false -> success_response
+      false ->
+        success_response
     end
   end
 
