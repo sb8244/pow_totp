@@ -1,10 +1,10 @@
 defmodule PowTotp.Phoenix.SetupController do
   use Pow.Extension.Phoenix.Controller.Base
+  require Logger
+  alias PowTotp.Plug
 
   plug(:require_authenticated)
   plug(:assign_create_path when action in [:new, :create])
-
-  alias PowTotp.Plug
 
   def process_new(conn, _params) do
     {:ok, Plug.generate_new_token(conn), conn}
@@ -26,6 +26,7 @@ defmodule PowTotp.Phoenix.SetupController do
             {:ok, :redirect, conn}
 
           {:error, err} ->
+            Logger.error("#{__MODULE__} persist_totp failed error=#{inspect(err)}")
             {:error, :persistence, conn}
         end
 

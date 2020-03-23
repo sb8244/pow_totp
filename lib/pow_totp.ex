@@ -17,11 +17,12 @@ defmodule PowTotp do
   @impl true
   def phoenix_messages?(), do: true
 
-  @impl true
-  def phoenix_templates() do
-    [
-      {"setup", ~w(new edit)}
-      {"session", ~w(new)}
-    ]
-  end
+  # TODO: Include this with version 1.0.20
+  # @impl true
+  # def phoenix_templates() do
+  #   [
+  #     {"setup", ~w(new edit)},
+  #     {"session", ~w(new)}
+  #   ]
+  # end
 end

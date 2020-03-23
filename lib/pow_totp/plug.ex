@@ -43,7 +43,7 @@ defmodule PowTotp.Plug do
         |> CodeChangeset.apply_insert()
 
       {:error, e} ->
-        Logger.error("#{__MODULE__} decrypt_totp_secret failed error=#{inspect e}")
+        Logger.error("#{__MODULE__} decrypt_totp_secret failed error=#{inspect(e)}")
         {:error, :secret_failure}
     end
   end

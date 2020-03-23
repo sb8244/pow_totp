@@ -26,7 +26,8 @@ defmodule PowTotp.Phoenix.SessionController do
   end
 
   def process_create(conn, %{"totp" => params}) do
-    with {:cookie, {identity, conn}} when not is_nil(identity) <- {:cookie, PowTotp.Stores.Cookie.get_user_identity(conn)},
+    with {:cookie, {identity, conn}} when not is_nil(identity) <-
+           {:cookie, PowTotp.Stores.Cookie.get_user_identity(conn)},
          {:user, user} when not is_nil(user) <- {:user, fetch_user(identity, conn)},
          {:verify, {:ok, _changeset}} <- {:verify, PowTotp.Plug.verify_totp(conn, params, user)},
          conn <- Pow.Plug.create(conn, user) do
