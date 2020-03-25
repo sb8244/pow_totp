@@ -62,14 +62,23 @@ defmodule PowTotp.Plug do
     user.totp_activated_at != nil and user.totp_secret != nil
   end
 
+  def append_totp_verified_to_session_metadata(conn) do
+    metadata =
+      conn.private
+      |> Map.get(:pow_session_metadata, [])
+      |> Keyword.put(:totp_verified_at, timestamp())
+
+    Plug.Conn.put_private(conn, :pow_session_metadata, metadata)
+  end
+
+  defp timestamp, do: :os.system_time(:millisecond)
+
   defp gen_totp_secret(), do: :crypto.strong_rand_bytes(30) |> Base.encode32()
 
   defp totp_issuer(config),
     do:
       Pow.Config.get(config, :totp_issuer) ||
-        Pow.Config.raise_error(
-          "No totp_issuer configuration option provided. It's required to use PowTotp"
-        )
+        Pow.Config.raise_error("No totp_issuer configuration option provided. It's required to use PowTotp")
 
   defp totp_url(%{email: email}, secret, issuer) when is_bitstring(email),
     do: URI.encode("otpauth://totp/#{email}?secret=#{secret}&issuer=#{issuer}")

@@ -22,8 +22,8 @@ defmodule PowTotp.Phoenix.SetupController do
     case Plug.try_new(params) do
       {:ok, _changeset} ->
         case Plug.persist_totp(conn, params) do
-          {:ok, _user} ->
-            {:ok, :redirect, conn}
+          {:ok, user} ->
+            {:ok, {:redirect, user}, conn}
 
           {:error, err} ->
             Logger.error("#{__MODULE__} persist_totp failed error=#{inspect(err)}")
@@ -35,6 +35,13 @@ defmodule PowTotp.Phoenix.SetupController do
     end
   end
 
+  def respond_create({:ok, {:redirect, user}, conn}) do
+    conn
+    |> Plug.append_totp_verified_to_session_metadata()
+    |> Pow.Plug.create(user)
+    |> totp_activated_redirect()
+  end
+
   def respond_create({:error, %{params: params, changeset: changeset}, conn}) do
     svg = Plug.generate_svg(conn, params)
 
@@ -43,10 +50,6 @@ defmodule PowTotp.Phoenix.SetupController do
     |> assign(:svg, svg)
     |> assign(:changeset, changeset)
     |> render("new.html")
-  end
-
-  def respond_create({:ok, :redirect, conn}) do
-    totp_activated_redirect(conn)
   end
 
   def respond_create({:error, :persistence, conn}) do
