@@ -7,7 +7,7 @@ defmodule PowTotp.Phoenix.Router do
   defmacro routes(_config) do
     quote location: :keep do
       Router.pow_resources("/totp-setup", SetupController,
-        only: [:new, :create, :edit],
+        only: [:new, :create, :edit, :delete],
         singleton: true
       )
 

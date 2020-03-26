@@ -91,7 +91,16 @@ defmodule PowTotp.Phoenix.SetupController do
     |> redirect(to: routes(conn).path_for(conn, __MODULE__, :new))
   end
 
-  # TODO: Allow user to delete TOTP
+  def process_delete(conn, _params) do
+    case Plug.disable_totp(conn) do
+      {:ok, _user} ->
+        {:ok, :redirect, conn}
+    end
+  end
+
+  def respond_delete({:ok, :redirect, conn}) do
+    totp_activated_redirect(conn)
+  end
 
   defp assign_create_path(conn, _opts) do
     path = routes(conn).path_for(conn, __MODULE__, :create)

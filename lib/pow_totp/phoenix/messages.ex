@@ -12,5 +12,5 @@ defmodule PowTotp.Phoenix.Messages do
   @doc """
   Flash message to show when user tries to access totp but doesn't have 2FA setup.
   """
-  def not_setup_error(_conn), do: "You don't have 2FA setup."
+  def not_setup_error(_conn), do: "2FA is disabled."
 end

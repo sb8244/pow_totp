@@ -32,6 +32,17 @@ defmodule PowTotp.Plug do
     )
   end
 
+  def disable_totp(conn) do
+    config = Pow.Plug.fetch_config(conn)
+    user = Pow.Plug.current_user(conn)
+
+    PowTotp.Ecto.Context.update_totp(
+      user,
+      %{"totp_secret" => nil, "totp_activated_at" => nil},
+      config
+    )
+  end
+
   def verify_totp(conn, params, user) do
     config = Pow.Plug.fetch_config(conn)
 
