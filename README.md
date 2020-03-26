@@ -9,6 +9,7 @@
 - [ ] Release with 1.0.20 for template hooks
 - [ ] Implement base acceptable templates (extract from existing project)
 - [ ] Should TOTP codes be 1-time use only? If so, need to implement via db powered code list
+- [ ] Recovery codes (stored / verified like a user password)
 
 ## In Action
 
