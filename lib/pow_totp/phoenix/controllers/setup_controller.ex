@@ -49,7 +49,8 @@ defmodule PowTotp.Phoenix.SetupController do
     conn
     |> Plug.append_totp_verified_to_session_metadata()
     |> Pow.Plug.create(user)
-    |> totp_activated_redirect()
+    |> put_flash(:info, extension_messages(conn).totp_setup(conn))
+    |> registration_edit_redirect()
   end
 
   def respond_create({:error, %{params: params, changeset: changeset}, conn}) do
@@ -99,7 +100,9 @@ defmodule PowTotp.Phoenix.SetupController do
   end
 
   def respond_delete({:ok, :redirect, conn}) do
-    totp_activated_redirect(conn)
+    conn
+    |> put_flash(:info, extension_messages(conn).totp_disabled(conn))
+    |> registration_edit_redirect()
   end
 
   defp assign_create_path(conn, _opts) do
@@ -108,7 +111,10 @@ defmodule PowTotp.Phoenix.SetupController do
   end
 
   defp totp_activated_redirect(conn) do
-    conn
-    |> redirect(to: routes(conn).path_for(conn, __MODULE__, :edit))
+    redirect(conn, to: routes(conn).path_for(conn, __MODULE__, :edit))
+  end
+
+  defp registration_edit_redirect(conn) do
+    redirect(conn, to: routes(conn).registration_path(conn, :edit))
   end
 end
