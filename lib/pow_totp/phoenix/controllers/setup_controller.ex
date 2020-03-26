@@ -7,7 +7,13 @@ defmodule PowTotp.Phoenix.SetupController do
   plug(:assign_create_path when action in [:new, :create])
 
   def process_new(conn, _params) do
-    {:ok, Plug.generate_new_token(conn), conn}
+    case Pow.Plug.current_user(conn) do
+      %{totp_activated_at: time} when not is_nil(time) ->
+        {:error, :already_setup, conn}
+
+      _ ->
+        {:ok, Plug.generate_new_token(conn), conn}
+    end
   end
 
   def respond_new({:ok, %{secret: secret, svg: svg, changeset: changeset}, conn}) do
@@ -16,6 +22,10 @@ defmodule PowTotp.Phoenix.SetupController do
     |> assign(:svg, svg)
     |> assign(:changeset, changeset)
     |> render("new.html")
+  end
+
+  def respond_new({:error, :already_setup, conn}) do
+    totp_activated_redirect(conn)
   end
 
   def process_create(conn, %{"totp" => params}) do
