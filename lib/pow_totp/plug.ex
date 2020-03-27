@@ -79,7 +79,20 @@ defmodule PowTotp.Plug do
       |> Map.get(:pow_session_metadata, [])
       |> Keyword.put(:totp_verified_at, timestamp())
 
-    Plug.Conn.put_private(conn, :pow_session_metadata, metadata)
+    conn
+    |> Plug.Conn.put_private(:pow_session_metadata, metadata)
+    |> Plug.Conn.put_private(:pow_persistent_session_metadata, session_metadata: metadata)
+  end
+
+  def create_user(conn, user) do
+    config = Pow.Plug.fetch_config(conn)
+    conn = Pow.Plug.create(conn, user)
+
+    if PowPersistentSession in Pow.Extension.Config.extensions(config) do
+      PowPersistentSession.Plug.create(conn, user)
+    else
+      conn
+    end
   end
 
   defp timestamp, do: :os.system_time(:millisecond)

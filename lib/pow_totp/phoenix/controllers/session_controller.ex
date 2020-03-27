@@ -29,7 +29,7 @@ defmodule PowTotp.Phoenix.SessionController do
     with {:user, user} when not is_nil(user) <- {:user, Pow.Plug.current_user(conn)},
          {:verify, {:ok, _changeset}} <- {:verify, PowTotp.Plug.verify_totp(conn, params, user)},
          conn <- PowTotp.Plug.append_totp_verified_to_session_metadata(conn),
-         conn <- Pow.Plug.create(conn, user) do
+         conn <- PowTotp.Plug.create_user(conn, user) do
       {:ok, user, conn}
     else
       {:cookie, {nil, _}} ->
